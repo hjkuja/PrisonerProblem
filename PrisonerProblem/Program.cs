@@ -1,68 +1,94 @@
 ﻿// This is a code example of the 100 prisoners problem
 
-var amountOfPrisoners = 100;
+// Amount of prisoners. Should be divisible by 2.
+int amountOfPrisoners = 100;
+int timesToRun = 1500;
+bool shufflePrisoners = false;
 
-var prisonerNumbers = new int[amountOfPrisoners];
-var boxes = new int[amountOfPrisoners];
+int successfulRuns = 0;
+int failedRuns = 0;
 
-// Create prisoner numbers and boxes
-for (int i = 0; i < amountOfPrisoners; i++)
+if (amountOfPrisoners % 2 > 0)
 {
-    boxes[i] = i + 1;
-    prisonerNumbers[i] = i + 1;
+    throw new ArgumentException("Amount of prisoners should be dividable by 2!");
 }
 
-// Shuffle box numbers
-boxes.Shuffle();
-prisonerNumbers.Shuffle(); // Prisoner numbers can also be shuffled -> prisoners start in random order.
-
-for (int i = 0; i < amountOfPrisoners; i++)
+for (int runNum = 0; runNum < timesToRun; runNum++)
 {
-    Console.WriteLine($"Box index={i} has {boxes[i]}");
-}
+    // Initialise the number variables
+    int[] prisonerNumbers = new int[amountOfPrisoners];
+    int[] boxes = new int[amountOfPrisoners];
+    bool runHasFailed = false;
 
-// Every prisoner has (n / 2) tries to find their own number
-foreach (var prisoner in prisonerNumbers)
-{
-    Console.WriteLine($"-------------- NEXT UP PRISONER #{prisoner} --------------");
-    Console.WriteLine($"");
-
-    var tryNumber = 1;
-    var maxTries = (amountOfPrisoners / 2);
-    var prevPeek = prisoner;
-    var numberFound = false;
-    while (!numberFound && tryNumber <= maxTries)
+    // Create prisoner numbers and boxes
+    for (int i = 0; i < amountOfPrisoners; i++)
     {
-        Console.WriteLine($"\nPrisoner #{prisoner} try No. #{tryNumber}:\n\t\tPrisoner peeks in the box #{prevPeek} (index:{prevPeek-1})");
-        var guess = boxes[prevPeek - 1];
+        boxes[i] = i + 1;
+        prisonerNumbers[i] = i + 1;
+    }
 
-        // If prisoner finds their box
-        if (guess == prisoner)
+    // Shuffle box numbers
+    boxes.Shuffle();
+
+    // Prisoner numbers can also be shuffled -> prisoners start in random order.
+    if (shufflePrisoners) prisonerNumbers.Shuffle();
+
+    // Every prisoner has (n / 2) tries to find their own number
+    foreach (var prisoner in prisonerNumbers)
+    {
+        // Try number for logging / writing to console
+        int tryNumber = 1;
+        // Max tries is 50 when there is 100 prisoners => prisoner amt / 2
+        int maxTries = (amountOfPrisoners / 2);
+        // Previous peek = next box's number
+        // Prisoner starts with their own number = "previous peek" was their own number
+        int prevPeek = prisoner;
+        // If prisoner found their number
+        bool numberFound = false;
+
+        while (!numberFound && tryNumber <= maxTries)
         {
-            Console.WriteLine($"\t\t{guess}! It's CORRECT!");
-            numberFound = true;
-        } else
-        {
-            Console.WriteLine($"\t\t\"It's {guess}.\"");
-            if (tryNumber < maxTries)
+            // The guess is always what was found from the previous box
+            var guess = boxes[prevPeek - 1];
+
+            // If prisoner finds their box
+            if (guess == prisoner)
             {
-                Console.WriteLine($"\t\t\"Must keep looking...\"");
+                numberFound = true;
             }
-            else
-            {
-                Console.WriteLine("\t\t\"Oh no..\"");
-            }
+
+            prevPeek = guess;
+            tryNumber++;
         }
 
-        prevPeek = guess;
-        tryNumber++;
+        if (!numberFound)
+        {
+            runHasFailed = true;
+            break;
+        }
     }
 
-    Console.WriteLine();
-
-    if (!numberFound)
+    Console.WriteLine($"Run No. #{runNum} has passed");
+    if (runHasFailed)
     {
-        Console.WriteLine($"Prisoner #{prisoner} did not find their number.\nEveryone loses! >:)");
-        break;
+        failedRuns++;
+    } else
+    {
+        successfulRuns++;
     }
+}
+
+Console.WriteLine($"Successful runs {successfulRuns}");
+Console.WriteLine($"Failed runs {failedRuns}");
+
+// We can calculate the win % of all runs to see if it is close to 30%
+decimal per = (decimal.Parse(successfulRuns.ToString()) / decimal.Parse(timesToRun.ToString())) * 100;
+Console.WriteLine($"Prisoner win % = {per.ToString("##.#####")}%");
+
+Wait();
+
+static void Wait()
+{
+    Console.WriteLine("Press any key to continue");
+    Console.ReadLine();
 }
