@@ -1,4 +1,4 @@
-﻿// This is a code example of the 100 prisoners problem
+// This is a code example of the 100 prisoners problem
 
 // Amount of prisoners. Should be divisible by 2.
 int amountOfPrisoners = 100;
@@ -81,7 +81,7 @@ for (int runNum = 0; runNum < timesToRun; runNum++)
 Console.WriteLine($"Successful runs {successfulRuns}");
 Console.WriteLine($"Failed runs {failedRuns}");
 
-// We can calculate the win % of all runs to see if it is close to 30%
+// We can calculate the win % of all runs to see if it is close to the theoretical value
 decimal per = (decimal.Parse(successfulRuns.ToString()) / decimal.Parse(timesToRun.ToString())) * 100;
 Console.WriteLine($"Prisoner win % = {per.ToString("##.#####")}%");
 
