@@ -1,4 +1,6 @@
 .vs
+.vscode
+.cursor
 [Bb]in
 [Oo]bj
 *.user
